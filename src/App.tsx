@@ -36,14 +36,14 @@ function MainLayout() {
     <div className="flex flex-col h-screen w-full bg-white text-gray-900 font-sans overflow-hidden selection:bg-orange-500 selection:text-white">
       <Navigation />
       
-      <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <main id="main-content-area" className="flex-1 flex flex-col md:flex-row md:overflow-hidden overflow-y-auto">
         {/* Left Sidebar (Hero) */}
-        <div className="w-full md:w-[35%] bg-blue-50 border-r border-blue-100 overflow-y-auto flex flex-col shrink-0">
+        <div className="w-full md:w-[35%] bg-blue-50 md:border-r border-blue-100 md:overflow-y-auto flex flex-col shrink-0">
           <Hero />
         </div>
         
         {/* Right Content */}
-        <div className="w-full flex-1 overflow-y-auto flex flex-col bg-gray-50 shrink relative scroll-smooth">
+        <div id="right-content-scroll" className="w-full md:flex-1 min-h-screen md:min-h-0 md:overflow-y-auto flex flex-col bg-gray-50 flex-grow relative scroll-smooth">
           <Routes>
             <Route path="/" element={<Products />} />
             <Route path="/about" element={<About />} />

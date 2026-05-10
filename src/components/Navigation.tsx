@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart, Menu, X, User as UserIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
@@ -17,10 +17,36 @@ export default function Navigation() {
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const [siteName, setSiteName] = useState('EXPLORE MENU');
+  const location = useLocation();
+
+  useEffect(() => {
+    // When route changes, scroll both to top based on viewport
+    const mainElement = document.getElementById('main-content-area');
+    const rightContent = document.getElementById('right-content-scroll');
+    
+    if (location.pathname !== '/') {
+      if (mainElement && window.innerWidth < 768) {
+        mainElement.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      if (rightContent) {
+        rightContent.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [location.pathname]);
+
+  const handleNavClick = (href: string) => {
+    setIsMobileMenuOpen(false);
+    if (href === '/' && location.pathname === '/') {
+       // If already on home and clicked products, scroll to products
+       const rightContent = document.getElementById('right-content-scroll');
+       if (rightContent && window.innerWidth < 768) {
+         rightContent.scrollIntoView({ behavior: 'smooth' });
+       }
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
     
     // Config logic
     const loadConfig = () => {
@@ -63,6 +89,7 @@ export default function Navigation() {
           <Link 
             key={link.name}
             to={link.href}
+            onClick={() => handleNavClick(link.href)}
             className="text-gray-600 hover:text-blue-700 transition-colors"
           >
             {link.name}
@@ -116,7 +143,7 @@ export default function Navigation() {
               key={link.name}
               to={link.href}
               className="text-gray-800 text-lg font-bold py-2 hover:text-blue-700 transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => handleNavClick(link.href)}
             >
               {link.name}
             </Link>
