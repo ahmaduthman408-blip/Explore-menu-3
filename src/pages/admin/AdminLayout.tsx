@@ -26,16 +26,16 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check locally if admin is authenticated (simple persistence for this demo)
-    const isAdmin = sessionStorage.getItem('isAdminAuthenticated') === 'true';
-    setIsAdminAuthenticated(isAdmin);
-    if (!isAdmin && location.pathname !== '/admin/login') {
+    // We remove sessionStorage persistence to force a password prompt every time
+    // they enter the admin area. We also clear any old localStorage.
+    localStorage.removeItem('isAdminAuthenticated');
+    
+    if (!isAdminAuthenticated && location.pathname !== '/admin/login') {
       navigate('/admin/login');
     }
-  }, [location, navigate]);
+  }, [isAdminAuthenticated, location, navigate]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('isAdminAuthenticated');
     setIsAdminAuthenticated(false);
     navigate('/');
   };

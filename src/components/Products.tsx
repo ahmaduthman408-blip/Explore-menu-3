@@ -16,11 +16,36 @@ const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
 
   const getEmbedUrl = (url: string) => {
     if (!url) return '';
-    if (url.includes('youtube.com/watch?v=')) {
-      return url.replace('watch?v=', 'embed/');
+    
+    let videoId = '';
+    if (url.includes('youtube.com/watch')) {
+      try {
+        videoId = new URL(url).searchParams.get('v') || '';
+      } catch (e) {
+        videoId = url.split('v=')[1]?.split('&')[0] || '';
+      }
+    } else if (url.includes('youtu.be/')) {
+      try {
+        videoId = new URL(url).pathname.substring(1);
+      } catch (e) {
+        videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
+      }
+    } else if (url.includes('youtube.com/shorts/')) {
+      try {
+        const parts = new URL(url).pathname.split('/');
+        videoId = parts[parts.length - 1] || '';
+      } catch (e) {
+        videoId = url.split('shorts/')[1]?.split('?')[0] || '';
+      }
     }
-    if (url.includes('youtu.be/')) {
-      return url.replace('youtu.be/', 'youtube.com/embed/');
+    
+    // Test if they already put an embed URL
+    if (url.includes('youtube.com/embed/')) {
+       return url;
+    }
+
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}`;
     }
     return url;
   };
