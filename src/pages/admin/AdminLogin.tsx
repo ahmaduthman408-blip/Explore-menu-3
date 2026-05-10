@@ -18,7 +18,7 @@ export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
 
     setTimeout(() => {
       if (password === storedPassword) {
-        localStorage.setItem('isAdminAuthenticated', 'true');
+        sessionStorage.setItem('isAdminAuthenticated', 'true');
         onLogin();
         navigate('/admin');
         toast.success('Welcome back, Admin!');
