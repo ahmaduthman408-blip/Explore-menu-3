@@ -6,7 +6,7 @@ import { ShoppingBag, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import toast from 'react-hot-toast';
 
-const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
+export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
   const addToCart = useStore(state => state.addToCart);
 
   const handleAddToCart = () => {
@@ -16,6 +16,14 @@ const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
 
   const getEmbedUrl = (url: string) => {
     if (!url) return '';
+    
+    // Check if user pasted an entire iframe tag
+    if (url.includes('<iframe')) {
+      const match = url.match(/src="([^"]+)"/);
+      if (match) {
+        url = match[1];
+      }
+    }
     
     let videoId = '';
     if (url.includes('youtube.com/watch')) {
@@ -39,7 +47,7 @@ const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
       }
     }
     
-    // Test if they already put an embed URL
+    // If it's already an embed URL, make sure we just return it
     if (url.includes('youtube.com/embed/')) {
        return url;
     }
@@ -57,13 +65,14 @@ const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
       viewport={{ once: true, margin: "-50px" }}
       className="group bg-white rounded-xl p-4 shadow-sm hover:shadow-2xl transition-all border border-gray-100 flex flex-col"
     >
-      <div className="relative h-48 bg-gray-100 rounded-lg mb-4 overflow-hidden mask-image">
+      <div className="relative h-48 bg-gray-100 rounded-lg mb-4 overflow-hidden">
         {product.video_url ? (
           <iframe 
             src={getEmbedUrl(product.video_url)} 
             title={product.name}
-            className="w-full h-full object-cover"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           />
         ) : (

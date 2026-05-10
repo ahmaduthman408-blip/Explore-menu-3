@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
+import Home from './components/Home';
 import Products from './components/Products';
 import About from './components/About';
 import Contact from './components/Contact';
@@ -45,7 +46,8 @@ function MainLayout() {
         {/* Right Content */}
         <div id="right-content-scroll" className="w-full md:flex-1 min-h-screen md:min-h-0 md:overflow-y-auto flex flex-col bg-gray-50 flex-grow relative scroll-smooth">
           <Routes>
-            <Route path="/" element={<Products />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/track-order" element={<TrackOrder />} />
