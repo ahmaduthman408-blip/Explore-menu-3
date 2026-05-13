@@ -63,7 +63,7 @@ export function useFetchProducts() {
             setProducts(seeded as Product[]);
           }
         } else {
-          const decodedData = data.map((item: any) => {
+          const decodedData = data.filter((item: any) => item.name !== '__SITE_SETTINGS__').map((item: any) => {
             let video_url = item.video_url || '';
             let gallery: string[] = [];
             if (video_url.startsWith('{')) {

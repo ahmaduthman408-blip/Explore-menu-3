@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { getSettings, saveSettings } from '../../lib/settings';
 
 export default function AdminSettings() {
   const [password, setPassword] = useState('');
   const [siteName, setSiteName] = useState('EXPLORE MENU');
   const [logoUrl, setLogoUrl] = useState('');
-  const [storyContent, setStoryContent] = useState('EXPLORE MENU delivers premium, affordable fragrances tailored to your personality and lifestyle. We believe that luxury shouldn\'t be a privilege, but an accessible expression of who you are.\n\nFounded on the principles of authenticity and elegance, every bottle represents a journey. Whether you\'re heading to a boardroom meeting or a casual evening out, we have the perfect scent to boost your confidence and leave a lasting impression.');
+  const [storyContent, setStoryContent] = useState('');
 
   useEffect(() => {
-    // Load existing settings from API
-    fetch('/api/settings')
-      .then(res => res.json())
+    // Load existing settings from Supabase
+    getSettings()
       .then(data => {
         if (data.adminPassword) setPassword(data.adminPassword);
         if (data.siteName) setSiteName(data.siteName);
@@ -23,17 +23,16 @@ export default function AdminSettings() {
   const handleSavePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          adminPassword: password,
-          siteName,
-          siteLogo: logoUrl,
-          siteStory: storyContent
-        })
+      const currentSettings = await getSettings();
+      const success = await saveSettings({
+        ...currentSettings,
+        adminPassword: password,
       });
-      toast.success('Admin password updated successfully.');
+      if (success) {
+        toast.success('Admin password updated successfully.');
+      } else {
+        toast.error('Failed to update password');
+      }
     } catch (e) {
       toast.error('Failed to update password');
     }
@@ -42,18 +41,23 @@ export default function AdminSettings() {
   const handleSaveGeneral = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          adminPassword: password,
-          siteName,
-          siteLogo: logoUrl,
-          siteStory: storyContent
-        })
+      const currentSettings = await getSettings();
+      const success = await saveSettings({
+        ...currentSettings,
+        siteName,
+        siteLogo: logoUrl,
+        siteStory: storyContent
       });
-      toast.success('General settings saved! They will reflect on the live site immediately.');
-      window.dispatchEvent(new Event('settingsUpdated'));
+      
+      if (success) {
+        localStorage.setItem('siteName', siteName);
+        localStorage.setItem('siteLogo', logoUrl);
+        localStorage.setItem('siteStory', storyContent);
+        toast.success('General settings saved! They will reflect on the live site immediately.');
+        window.dispatchEvent(new Event('settingsUpdated'));
+      } else {
+         toast.error('Failed to save settings');
+      }
     } catch (e) {
       toast.error('Failed to save settings');
     }

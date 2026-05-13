@@ -24,8 +24,8 @@ As we continue to grow, our mission remains the same: To democratize luxury, off
       if (localStory) setSiteStory(localStory);
 
       try {
-        const res = await fetch('/api/settings');
-        const data = await res.json();
+        const { getSettings } = await import('../lib/settings');
+        const data = await getSettings();
         if (data.siteName) {
           setSiteName(data.siteName);
           localStorage.setItem('siteName', data.siteName);
@@ -35,7 +35,7 @@ As we continue to grow, our mission remains the same: To democratize luxury, off
           localStorage.setItem('siteStory', data.siteStory);
         }
       } catch (err) {
-        console.warn('Failed to load settings from API');
+        console.warn('Failed to load settings from Supabase');
       }
     };
     loadConfig();

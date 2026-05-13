@@ -58,8 +58,8 @@ export default function Navigation() {
       if (localLogo) setSiteLogo(localLogo);
 
       try {
-        const res = await fetch('/api/settings');
-        const data = await res.json();
+        const { getSettings } = await import('../lib/settings');
+        const data = await getSettings();
         if (data.siteName) {
           setSiteName(data.siteName);
           localStorage.setItem('siteName', data.siteName);
@@ -69,7 +69,7 @@ export default function Navigation() {
           localStorage.setItem('siteLogo', data.siteLogo);
         }
       } catch (err) {
-        console.warn('Failed to fetch settings API', err);
+        console.warn('Failed to fetch settings from Supabase', err);
       }
     };
     loadConfig();

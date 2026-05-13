@@ -30,14 +30,14 @@ function MainLayout() {
       if (localName) setSiteName(localName);
 
       try {
-        const res = await fetch('/api/settings');
-        const data = await res.json();
+        const { getSettings } = await import('./lib/settings');
+        const data = await getSettings();
         if (data.siteName) {
           setSiteName(data.siteName);
           localStorage.setItem('siteName', data.siteName);
         }
       } catch (err) {
-        console.warn('Failed to load settings from API');
+        console.warn('Failed to load settings from Supabase');
       }
     };
     loadConfig();

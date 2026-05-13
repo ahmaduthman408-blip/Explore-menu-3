@@ -9,19 +9,6 @@ import toast from 'react-hot-toast';
 export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
   const addToCart = useStore(state => state.addToCart);
   
-  const [activeMedia, setActiveMedia] = React.useState<number | 'video'>(0);
-
-  React.useEffect(() => {
-    setActiveMedia(0);
-  }, [product.video_url]);
-
-  const allImages = [product.image || 'https://via.placeholder.com/400x500?text=Perfume', ...(product.gallery || [])].filter(Boolean) as string[];
-
-  const handleAddToCart = () => {
-    addToCart(product);
-    toast.success(`${product.name} added to cart!`);
-  };
-
   const getEmbedUrl = (url: string) => {
     if (!url) return '';
     
@@ -63,7 +50,30 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
     if (videoId) {
       return `https://www.youtube.com/embed/${videoId}`;
     }
-    return url;
+    
+    // If it's an mp4, webm, etc., allow it as a normal link or maybe we can detect it
+    if (url.match(/\.(mp4|webm|ogg)$/i)) {
+      return url;
+    }
+
+    // Default to nothing if it's an unrecognized or potentially dangerous URL (like another website)
+    return '';
+  };
+
+  const embedUrl = getEmbedUrl(product.video_url || '');
+  const hasValidVideo = Boolean(embedUrl);
+
+  const [activeMedia, setActiveMedia] = React.useState<number | 'video'>(hasValidVideo ? 'video' : 0);
+
+  React.useEffect(() => {
+    setActiveMedia(hasValidVideo ? 'video' : 0);
+  }, [hasValidVideo]);
+
+  const allImages = [product.image || 'https://via.placeholder.com/400x500?text=Perfume', ...(product.gallery || [])].filter(Boolean) as string[];
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
   };
 
   return (
@@ -74,9 +84,9 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
       className="group bg-white rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-2xl transition-all border border-gray-100 flex flex-col"
     >
       <div className={`relative h-40 sm:h-48 rounded-lg mb-2 overflow-hidden ${activeMedia === 'video' ? 'bg-black' : 'bg-gray-100'}`}>
-        {activeMedia === 'video' && product.video_url ? (
+        {activeMedia === 'video' && hasValidVideo ? (
           <iframe 
-            src={getEmbedUrl(product.video_url)} 
+            src={embedUrl} 
             title={product.name}
             className="w-full h-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

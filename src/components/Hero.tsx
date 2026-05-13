@@ -23,7 +23,7 @@ export default function Hero() {
           
           <div className="flex flex-col sm:flex-row gap-4 mb-10 w-full sm:w-auto">
             <Link 
-              to="/" 
+              to="/products" 
               className="flex-1 sm:flex-none px-8 py-3 bg-blue-700 text-white font-bold rounded-lg shadow-xl hover:bg-blue-800 transition-all active:scale-95 text-center"
             >
               Shop Now
