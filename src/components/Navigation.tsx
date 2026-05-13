@@ -123,10 +123,6 @@ export default function Navigation() {
           </button>
         )}
 
-        <Link to="/admin" className="flex px-4 py-1.5 bg-orange-500 text-white text-xs font-bold rounded-full hover:bg-orange-600 hover:shadow-lg transition-all">
-          Admin
-        </Link>
-
         <button 
           className="md:hidden text-gray-900 p-1"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
