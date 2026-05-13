@@ -63,9 +63,9 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      className="group bg-white rounded-xl p-4 shadow-sm hover:shadow-2xl transition-all border border-gray-100 flex flex-col"
+      className="group bg-white rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-2xl transition-all border border-gray-100 flex flex-col"
     >
-      <div className="relative h-48 bg-gray-100 rounded-lg mb-4 overflow-hidden">
+      <div className="relative h-40 sm:h-48 bg-gray-100 rounded-lg mb-3 sm:mb-4 overflow-hidden">
         {product.video_url ? (
           <iframe 
             src={getEmbedUrl(product.video_url)} 
@@ -93,15 +93,15 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
       </div>
 
       <div className="flex flex-col flex-1 mt-2">
-        <h3 className="font-black text-gray-900 mb-1">{product.name}</h3>
-        <div className="flex justify-between items-end mb-4">
-          <p className="text-xs text-gray-500 line-clamp-1 max-w-[60%]">{product.description}</p>
-          <span className="text-blue-700 font-black whitespace-nowrap">₦{product.price.toLocaleString()}</span>
+        <h3 className="text-sm sm:text-base font-black text-gray-900 mb-1 line-clamp-1">{product.name}</h3>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end mb-3 sm:mb-4 gap-1">
+          <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1 sm:max-w-[60%]">{product.description}</p>
+          <span className="text-blue-700 font-black text-sm sm:text-base whitespace-nowrap">₦{product.price.toLocaleString()}</span>
         </div>
         
         <button 
           onClick={handleAddToCart}
-          className="mt-auto w-full py-2 bg-blue-700 text-white text-xs font-bold rounded hover:bg-orange-500 transition-colors"
+          className="mt-auto w-full py-2 bg-blue-700 text-white text-[10px] sm:text-xs font-bold rounded hover:bg-orange-500 transition-colors"
         >
           ADD TO CART
         </button>
@@ -127,7 +127,7 @@ export default function Products() {
         </div>
       </div>
 
-      <div className="p-6 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 bg-gray-50">
+      <div className="p-4 md:p-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-6 bg-gray-50">
         {loading && products.length === 0 ? (
           <div className="col-span-full flex justify-center items-center py-20">
             <Loader2 className="animate-spin text-blue-700" size={40} />
