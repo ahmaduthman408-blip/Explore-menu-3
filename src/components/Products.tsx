@@ -8,6 +8,14 @@ import toast from 'react-hot-toast';
 
 export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
   const addToCart = useStore(state => state.addToCart);
+  
+  const [activeMedia, setActiveMedia] = React.useState<number | 'video'>(product.video_url ? 'video' : 0);
+
+  React.useEffect(() => {
+    setActiveMedia(product.video_url ? 'video' : 0);
+  }, [product.video_url]);
+
+  const allImages = [product.image || 'https://via.placeholder.com/400x500?text=Perfume', ...(product.gallery || [])].filter(Boolean) as string[];
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -65,8 +73,8 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
       viewport={{ once: true, margin: "-50px" }}
       className="group bg-white rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-2xl transition-all border border-gray-100 flex flex-col"
     >
-      <div className="relative h-40 sm:h-48 bg-gray-100 rounded-lg mb-3 sm:mb-4 overflow-hidden">
-        {product.video_url ? (
+      <div className="relative h-40 sm:h-48 bg-gray-100 rounded-lg mb-2 overflow-hidden">
+        {activeMedia === 'video' && product.video_url ? (
           <iframe 
             src={getEmbedUrl(product.video_url)} 
             title={product.name}
@@ -77,7 +85,7 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
           />
         ) : (
           <img 
-            src={product.image || 'https://via.placeholder.com/400x500?text=Perfume'} 
+            src={allImages[activeMedia === 'video' ? 0 : (activeMedia as number)]} 
             alt={product.name} 
             className="w-full h-full object-cover transform group-hover:scale-125 transition-transform duration-500 ease-out mix-blend-multiply opacity-90"
           />
@@ -91,6 +99,29 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
           )}
         </div>
       </div>
+
+      {/* Gallery Thumbnails */}
+      {(allImages.length > 1 || product.video_url) && (
+        <div className="flex gap-2 mb-3 sm:mb-4 overflow-x-auto pb-1 scrollbar-hide">
+          {product.video_url && (
+            <button 
+              onClick={() => setActiveMedia('video')}
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md flex-shrink-0 flex items-center justify-center bg-gray-900 text-white ${activeMedia === 'video' ? 'ring-2 ring-orange-500' : 'opacity-70 hover:opacity-100'}`}
+            >
+              ▶
+            </button>
+          )}
+          {allImages.map((img, idx) => (
+            <button 
+              key={idx}
+              onClick={() => setActiveMedia(idx)}
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md overflow-hidden flex-shrink-0 ${activeMedia === idx ? 'ring-2 ring-orange-500' : 'opacity-70 hover:opacity-100'}`}
+            >
+              <img src={img} alt="Thumbnail" className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-col flex-1 mt-2">
         <h3 className="text-sm sm:text-base font-black text-gray-900 mb-1 line-clamp-1">{product.name}</h3>

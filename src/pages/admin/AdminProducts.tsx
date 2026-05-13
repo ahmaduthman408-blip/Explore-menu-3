@@ -22,7 +22,8 @@ export default function AdminProducts() {
     description: '',
     image: '',
     urgency_minutes: '',
-    video_url: ''
+    video_url: '',
+    gallery: [] as string[]
   });
 
   const handleOpenModal = (product?: Product) => {
@@ -34,11 +35,12 @@ export default function AdminProducts() {
         description: product.description,
         image: product.image || '',
         urgency_minutes: product.urgency_minutes ? product.urgency_minutes.toString() : '',
-        video_url: product.video_url || ''
+        video_url: product.video_url || '',
+        gallery: product.gallery || []
       });
     } else {
       setEditingProduct(null);
-      setFormData({ name: '', price: '', description: '', image: '', urgency_minutes: '', video_url: '' });
+      setFormData({ name: '', price: '', description: '', image: '', urgency_minutes: '', video_url: '', gallery: [] });
     }
     setIsModalOpen(true);
   };
@@ -52,6 +54,26 @@ export default function AdminProducts() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    Promise.all(files.map(file => {
+      return new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+    })).then(results => {
+      setFormData(prev => ({ ...prev, gallery: [...prev.gallery, ...results] }));
+    });
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      gallery: prev.gallery.filter((_, i) => i !== index)
+    }));
   };
 
   const handleCloseModal = () => {
@@ -69,7 +91,8 @@ export default function AdminProducts() {
       description: formData.description,
       image: formData.image,
       urgency_minutes: formData.urgency_minutes ? parseInt(formData.urgency_minutes, 10) : null,
-      video_url: formData.video_url
+      video_url: formData.video_url,
+      gallery: formData.gallery
     };
 
     try {
@@ -273,6 +296,34 @@ export default function AdminProducts() {
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Gallery Images (Optional)</label>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryChange}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-2"
+                />
+                
+                {formData.gallery.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.gallery.map((imgUrl, idx) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
+                        <img src={imgUrl} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
+                        <button 
+                          type="button"
+                          onClick={() => removeGalleryImage(idx)}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-bl-lg p-0.5 opacity-80 hover:opacity-100 transition-opacity"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>

@@ -10,6 +10,7 @@ export interface Product {
   created_at?: string;
   urgency_minutes?: number; // Custom field for frontend urgency
   video_url?: string; // New field for video
+  gallery?: string[]; // Array of additional images
 }
 
 export interface CartItem extends Product {
