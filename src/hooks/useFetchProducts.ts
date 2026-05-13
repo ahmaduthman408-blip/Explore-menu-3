@@ -63,7 +63,23 @@ export function useFetchProducts() {
             setProducts(seeded as Product[]);
           }
         } else {
-          setProducts(data as Product[]);
+          const decodedData = data.map((item: any) => {
+            let video_url = item.video_url || '';
+            let gallery: string[] = [];
+            if (video_url.startsWith('{')) {
+              try {
+                const parsed = JSON.parse(video_url);
+                video_url = parsed.v || '';
+                gallery = parsed.g || [];
+              } catch (e) {}
+            }
+            return {
+              ...item,
+              video_url,
+              gallery
+            };
+          });
+          setProducts(decodedData as Product[]);
         }
       } catch (err) {
         // Fallback

@@ -85,12 +85,21 @@ export default function AdminProducts() {
     e.preventDefault();
     setLoading(true);
 
+    const encodedVideoUrl = (formData.gallery?.length > 0 || formData.video_url?.startsWith('{')) 
+      ? JSON.stringify({ v: formData.video_url, g: formData.gallery })
+      : formData.video_url;
+
     const productData = {
       name: formData.name,
       price: parseFloat(formData.price),
       description: formData.description,
       image: formData.image,
       urgency_minutes: formData.urgency_minutes ? parseInt(formData.urgency_minutes, 10) : null,
+      video_url: encodedVideoUrl
+    };
+
+    const localProductData = {
+      ...productData,
       video_url: formData.video_url,
       gallery: formData.gallery
     };
@@ -107,7 +116,7 @@ export default function AdminProducts() {
           console.warn('Supabase update failed, updating local state only:', error);
           // If no connection, update locally anyway
         }
-        updateProduct({ ...editingProduct, ...productData } as Product);
+        updateProduct({ ...editingProduct, ...localProductData } as Product);
         toast.success('Product updated successfully!');
       } else {
         // Create
@@ -123,7 +132,7 @@ export default function AdminProducts() {
           newId = data[0].id;
         }
 
-        addProduct({ id: newId, ...productData } as Product);
+        addProduct({ id: newId, ...localProductData } as Product);
         toast.success('Product added successfully!');
       }
       handleCloseModal();
