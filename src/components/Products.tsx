@@ -158,10 +158,14 @@ export default function Products() {
         </div>
       </div>
 
-      <div className="p-4 md:p-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-6 bg-gray-50">
-        {loading && products.length === 0 ? (
+        <div className="p-4 md:p-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-6 bg-gray-50">
+        {products.length === 0 && loading ? (
           <div className="col-span-full flex justify-center items-center py-20">
             <Loader2 className="animate-spin text-blue-700" size={40} />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="col-span-full flex justify-center items-center py-20 text-gray-500">
+            No products available at the moment.
           </div>
         ) : (
           products.map((product) => (
