@@ -47,7 +47,7 @@ export function useFetchProducts() {
       }
 
       try {
-        const { data, error } = await supabase.from('products').select('*');
+        const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: true });
         
         if (error || !data || data.length === 0) {
           // If no data or error (like missing anon key), use seed data with dummy IDs
