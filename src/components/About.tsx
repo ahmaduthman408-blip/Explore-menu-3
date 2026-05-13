@@ -16,10 +16,27 @@ Sustainability and ethical sourcing are at the core of our philosophy. We partne
 As we continue to grow, our mission remains the same: To democratize luxury, offering you an exquisite array of scents that empower you to author your own story, one spray at a time.`);
 
   useEffect(() => {
-    const loadConfig = () => {
-      setSiteName(localStorage.getItem('siteName') || 'EXPLORE MENU');
-      const story = localStorage.getItem('siteStory');
-      if (story) setSiteStory(story);
+    const loadConfig = async () => {
+      // immediate local fallback
+      const localName = localStorage.getItem('siteName');
+      const localStory = localStorage.getItem('siteStory');
+      if (localName) setSiteName(localName);
+      if (localStory) setSiteStory(localStory);
+
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        if (data.siteName) {
+          setSiteName(data.siteName);
+          localStorage.setItem('siteName', data.siteName);
+        }
+        if (data.siteStory) {
+          setSiteStory(data.siteStory);
+          localStorage.setItem('siteStory', data.siteStory);
+        }
+      } catch (err) {
+        console.warn('Failed to load settings from API');
+      }
     };
     loadConfig();
     window.addEventListener('settingsUpdated', loadConfig);

@@ -25,8 +25,20 @@ function MainLayout() {
   const [siteName, setSiteName] = useState('EXPLORE MENU');
 
   useEffect(() => {
-    const loadConfig = () => {
-      setSiteName(localStorage.getItem('siteName') || 'EXPLORE MENU');
+    const loadConfig = async () => {
+      const localName = localStorage.getItem('siteName');
+      if (localName) setSiteName(localName);
+
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        if (data.siteName) {
+          setSiteName(data.siteName);
+          localStorage.setItem('siteName', data.siteName);
+        }
+      } catch (err) {
+        console.warn('Failed to load settings from API');
+      }
     };
     loadConfig();
     window.addEventListener('settingsUpdated', loadConfig);

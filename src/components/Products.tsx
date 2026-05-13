@@ -9,10 +9,10 @@ import toast from 'react-hot-toast';
 export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
   const addToCart = useStore(state => state.addToCart);
   
-  const [activeMedia, setActiveMedia] = React.useState<number | 'video'>(product.video_url ? 'video' : 0);
+  const [activeMedia, setActiveMedia] = React.useState<number | 'video'>(0);
 
   React.useEffect(() => {
-    setActiveMedia(product.video_url ? 'video' : 0);
+    setActiveMedia(0);
   }, [product.video_url]);
 
   const allImages = [product.image || 'https://via.placeholder.com/400x500?text=Perfume', ...(product.gallery || [])].filter(Boolean) as string[];

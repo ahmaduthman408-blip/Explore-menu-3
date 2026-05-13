@@ -50,9 +50,27 @@ export default function Navigation() {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     
     // Config logic
-    const loadConfig = () => {
-      setSiteName(localStorage.getItem('siteName') || 'EXPLORE MENU');
-      setSiteLogo(localStorage.getItem('siteLogo') || '');
+    const loadConfig = async () => {
+      // initial load from local storage if available for instant render
+      const localName = localStorage.getItem('siteName');
+      const localLogo = localStorage.getItem('siteLogo');
+      if (localName) setSiteName(localName);
+      if (localLogo) setSiteLogo(localLogo);
+
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        if (data.siteName) {
+          setSiteName(data.siteName);
+          localStorage.setItem('siteName', data.siteName);
+        }
+        if (data.siteLogo) {
+          setSiteLogo(data.siteLogo);
+          localStorage.setItem('siteLogo', data.siteLogo);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch settings API', err);
+      }
     };
     loadConfig();
     window.addEventListener('settingsUpdated', loadConfig);

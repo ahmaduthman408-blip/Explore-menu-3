@@ -8,32 +8,55 @@ export default function AdminSettings() {
   const [storyContent, setStoryContent] = useState('EXPLORE MENU delivers premium, affordable fragrances tailored to your personality and lifestyle. We believe that luxury shouldn\'t be a privilege, but an accessible expression of who you are.\n\nFounded on the principles of authenticity and elegance, every bottle represents a journey. Whether you\'re heading to a boardroom meeting or a casual evening out, we have the perfect scent to boost your confidence and leave a lasting impression.');
 
   useEffect(() => {
-    // Load existing settings if available in localStorage
-    const savedPassword = localStorage.getItem('adminPassword');
-    const savedSiteName = localStorage.getItem('siteName');
-    const savedLogo = localStorage.getItem('siteLogo');
-    const savedStory = localStorage.getItem('siteStory');
-
-    if (savedPassword) setPassword(savedPassword);
-    if (savedSiteName) setSiteName(savedSiteName);
-    if (savedLogo) setLogoUrl(savedLogo);
-    if (savedStory) setStoryContent(savedStory);
+    // Load existing settings from API
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data.adminPassword) setPassword(data.adminPassword);
+        if (data.siteName) setSiteName(data.siteName);
+        if (data.siteLogo) setLogoUrl(data.siteLogo);
+        if (data.siteStory) setStoryContent(data.siteStory);
+      })
+      .catch(err => console.error('Failed to load settings', err));
   }, []);
 
-  const handleSavePassword = (e: React.FormEvent) => {
+  const handleSavePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('adminPassword', password);
-    toast.success('Admin password updated successfully.');
+    try {
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminPassword: password,
+          siteName,
+          siteLogo: logoUrl,
+          siteStory: storyContent
+        })
+      });
+      toast.success('Admin password updated successfully.');
+    } catch (e) {
+      toast.error('Failed to update password');
+    }
   };
 
-  const handleSaveGeneral = (e: React.FormEvent) => {
+  const handleSaveGeneral = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('siteName', siteName);
-    localStorage.setItem('siteLogo', logoUrl);
-    localStorage.setItem('siteStory', storyContent);
-    toast.success('General settings saved! They will reflect on the live site if connected.');
-    // Ideally update global store or trigger re-render
-    window.dispatchEvent(new Event('settingsUpdated'));
+    try {
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminPassword: password,
+          siteName,
+          siteLogo: logoUrl,
+          siteStory: storyContent
+        })
+      });
+      toast.success('General settings saved! They will reflect on the live site immediately.');
+      window.dispatchEvent(new Event('settingsUpdated'));
+    } catch (e) {
+      toast.error('Failed to save settings');
+    }
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
