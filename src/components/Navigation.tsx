@@ -17,6 +17,7 @@ export default function Navigation() {
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const [siteName, setSiteName] = useState('EXPLORE MENU');
+  const [siteLogo, setSiteLogo] = useState('');
   const location = useLocation();
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function Navigation() {
     // Config logic
     const loadConfig = () => {
       setSiteName(localStorage.getItem('siteName') || 'EXPLORE MENU');
+      setSiteLogo(localStorage.getItem('siteLogo') || '');
     };
     loadConfig();
     window.addEventListener('settingsUpdated', loadConfig);
@@ -77,7 +79,11 @@ export default function Navigation() {
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-8 py-4 bg-white border-b border-gray-100 shadow-sm w-full">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-white font-bold">{siteName.charAt(0)}</div>
+        {siteLogo ? (
+          <img src={siteLogo} alt={siteName} className="w-8 h-8 object-contain rounded-full border border-gray-200" />
+        ) : (
+          <div className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-white font-bold">{siteName.charAt(0)}</div>
+        )}
         <Link to="/" className="text-xl font-black tracking-tighter text-blue-900 uppercase">
           {siteName}
         </Link>

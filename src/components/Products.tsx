@@ -73,7 +73,7 @@ export const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => 
       viewport={{ once: true, margin: "-50px" }}
       className="group bg-white rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-2xl transition-all border border-gray-100 flex flex-col"
     >
-      <div className="relative h-40 sm:h-48 bg-gray-100 rounded-lg mb-2 overflow-hidden">
+      <div className={`relative h-40 sm:h-48 rounded-lg mb-2 overflow-hidden ${activeMedia === 'video' ? 'bg-black' : 'bg-gray-100'}`}>
         {activeMedia === 'video' && product.video_url ? (
           <iframe 
             src={getEmbedUrl(product.video_url)} 
